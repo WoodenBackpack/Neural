@@ -25,19 +25,31 @@ class MyScreen(qWidgets.QMainWindow):
         self.painter.begin(self)
 
 
-        neural = NeuralNetwork(10, 3, 4, 2)
-        startPos = 10
+
+        neural = NeuralNetwork(8, 16, 2, 4)
+        maxLayerLen = max([neural.inLen[0].size, neural.hiddenLayers[0].size, neural.outLen[0].size])
+        maxLen = maxLayerLen * 40
+        lenSize = neural.inLen[0].size * 40
+        startPos = maxLen / 2 - (lenSize / 2)
         for x in neural.inLen[0]:
             self.createAndDrawRect(10, startPos, 30, 30, str(x)[:4], self.painter)
-            startPos += 35
+            startPos += 40
         startX = 50
         for x in neural.hiddenLayers:
-            startPos = 10
+            lenSize = x[0].size * 40
+            startPos = maxLen / 2 - (lenSize / 2)
             for y in x[0]:
                 self.createAndDrawRect(startX, startPos, 30, 30, str(y)[:4], self.painter)
-                startPos += 35
+                startPos += 40
             startX += 40
 
+        lenSize = neural.outLen[0].size * 40
+        startPos = maxLen / 2 - (lenSize / 2)
+        for x in neural.outLen[0]:
+            self.createAndDrawRect(startX, startPos, 30, 30, str(x)[:4], self.painter)
+            startPos += 40
+
+        self.resize(500, maxLen)
         self.painter.end()
     def createAndDrawRect(self, xPos, yPos, x, y, text, painter):
         qRect = qtCore.QRect(xPos ,yPos ,x ,y)
