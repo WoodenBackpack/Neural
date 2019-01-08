@@ -34,7 +34,10 @@ class MainWindow(qWidgets.QMainWindow):
                 self.createAndDrawRect(startX, startPos, circleSize, circleSize, str(cell)[:4], self.painter, cell)
                 startPos += circleSize + spacing
             startX += circleSize + spacing
-
+    def keyPressEvent(self, event):
+        if event.key() == qtCore.Qt.Key_Space:
+            self.neural.process(0,0)
+            self.update()
     def paintEvent(self, event):
         self.painter = qtGui.QPainter(self)
         self.painter.setPen(qtCore.Qt.white)
@@ -52,7 +55,6 @@ class MainWindow(qWidgets.QMainWindow):
         self.painter.drawEllipse(qRect)
         self.painter.setBrush(qtCore.Qt.white)
         self.painter.drawText(center, text)
-
 
 if __name__ == "__main__":
     app = qWidgets.QApplication(["app"])
