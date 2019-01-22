@@ -1,5 +1,3 @@
-#!./bin/python3
-
 import PyQt5.QtCore as qtCore
 import PyQt5.QtGui as qtGui
 import PyQt5.QtWidgets as qWidgets
@@ -19,7 +17,7 @@ class MainWindow(qWidgets.QMainWindow):
         qWidgets.QMainWindow.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.neural = NeuralNetwork(10,3,4,2)
+        self.neural = NeuralNetwork(2,3,2,2)
     def drawNet(self):
         circleSize = 50
         spacing = 20
@@ -37,6 +35,7 @@ class MainWindow(qWidgets.QMainWindow):
     def keyPressEvent(self, event):
         if event.key() == qtCore.Qt.Key_Space:
             self.neural.process(0,0)
+            self.neural.backPropagation(self.neural.generateExpectedTab(2, 0))
             self.update()
     def paintEvent(self, event):
         self.painter = qtGui.QPainter(self)
