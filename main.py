@@ -3,6 +3,7 @@ import PyQt5.QtGui as qtGui
 import PyQt5.QtWidgets as qWidgets
 
 from neural import *
+import math
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -17,7 +18,9 @@ class MainWindow(qWidgets.QMainWindow):
         qWidgets.QMainWindow.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.neural = NeuralNetwork(2,3,2,2)
+        self.neural = NeuralNetwork(2,3,1,2)
+        self.expected = self.neural.generateExpectedTab(2, 0)
+        print(self.expected)
     def drawNet(self):
         circleSize = 50
         spacing = 20
@@ -25,17 +28,22 @@ class MainWindow(qWidgets.QMainWindow):
         maxLayerLen = layerWithMaxSize.size
         self.maxLen = maxLayerLen * (circleSize + spacing)
         startX = circleSize
-        for layer in self.neural.layers:
-            lenSize = layer[0].size * (circleSize + spacing)
+        lenSize = self.neural.layers[0].size * (circleSize + spacing)
+        startPos = self.maxLen / 2 - (lenSize / 2)
+        for inCell in range(self.neural.layers[0].size):
+            self.createAndDrawRect(startX, startPos, circleSize, circleSize, str(self.neural.layers[0][inCell])[:4], self.painter, self.neural.layers[0][inCell])
+            startPos += circleSize + spacing
+        startX += circleSize + spacing
+        for layer in range(1, len(self.neural.layers)):
+            lenSize = self.neural.layers[layer][0].size * (circleSize + spacing)
             startPos = self.maxLen / 2 - (lenSize / 2)
-            for cell in layer[0]:
+            for cell in self.neural.layers[layer][1]:
                 self.createAndDrawRect(startX, startPos, circleSize, circleSize, str(cell)[:4], self.painter, cell)
                 startPos += circleSize + spacing
             startX += circleSize + spacing
     def keyPressEvent(self, event):
         if event.key() == qtCore.Qt.Key_Space:
-            self.neural.process(0,0)
-            self.neural.backPropagation(self.neural.generateExpectedTab(2, 0))
+            self.neural.process(self.expected)
             self.update()
     def paintEvent(self, event):
         self.painter = qtGui.QPainter(self)
