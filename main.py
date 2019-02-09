@@ -18,9 +18,8 @@ class MainWindow(qWidgets.QMainWindow):
         qWidgets.QMainWindow.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.neural = NeuralNetwork(2,3,1,2)
-        self.expected = self.neural.generateExpectedTab(2, 0)
-        print(self.expected)
+        self.neural = NeuralNetwork(3,5,4,3)
+        self.expected = self.neural.generateExpectedTab(3, 2)
     def drawNet(self):
         circleSize = 50
         spacing = 20
@@ -37,14 +36,16 @@ class MainWindow(qWidgets.QMainWindow):
         for layer in range(1, len(self.neural.layers)):
             lenSize = self.neural.layers[layer][0].size * (circleSize + spacing)
             startPos = self.maxLen / 2 - (lenSize / 2)
-            for cell in self.neural.layers[layer][1]:
-                self.createAndDrawRect(startX, startPos, circleSize, circleSize, str(cell)[:4], self.painter, cell)
+            for cell in range(len(self.neural.layers[layer][1])):
+                self.createAndDrawRect(startX, startPos, circleSize, circleSize, str(self.neural.layers[layer][1][cell])[:4], self.painter,self.neural.layers[layer][1][cell])
                 startPos += circleSize + spacing
             startX += circleSize + spacing
     def keyPressEvent(self, event):
         if event.key() == qtCore.Qt.Key_Space:
             self.neural.process(self.expected)
             self.update()
+        if event.key() == qtCore.Qt.Key_Escape:
+            self.close()
     def paintEvent(self, event):
         self.painter = qtGui.QPainter(self)
         self.painter.setPen(qtCore.Qt.white)
