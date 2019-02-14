@@ -94,10 +94,10 @@ class NeuralNetwork:
         self.backwardPassForOutputLayer()
         self.backwardPassForHiddenLayers()
 
-    def process(self, expected):
+    def process(self, inputLayer, expected):
+        self.layers[0] = inputLayer
         self.forwardPass()
         self.calculateTotalError(expected)
-        self.backwardPass()
 
     def calculateCost(self, expectedVal, outputCellVal):
         cost = 0

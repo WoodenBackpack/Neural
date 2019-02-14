@@ -43,6 +43,7 @@ class MainWindow(qWidgets.QMainWindow):
     def keyPressEvent(self, event):
         if event.key() == qtCore.Qt.Key_Space:
             self.neural.process(self.expected)
+            self.neural.backwardPass()   
             self.update()
         if event.key() == qtCore.Qt.Key_Escape:
             self.close()
