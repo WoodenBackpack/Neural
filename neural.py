@@ -1,6 +1,36 @@
 import math
 import numpy as np
 
+class Cell:
+  def __init__(self, value = 0):
+    self.value = value
+  def getValue(self):
+    return value
+
+class HiddenCell(Cell):
+  def __init__(self, value, out):
+    super().__init__(value)
+    self.out = out
+  def getOutValue(self):
+    return self.out
+
+class Layer:
+  def __init__(self, size):
+    self.cells = []
+    self.size = size
+
+class InOutLayer(Layer):
+  def __init__(self, size):
+    super().__init__(size)
+    for it in range(self.size):
+      self.cells.append(Cell())
+
+class HiddenLayer(Layer):
+  def __init__(self, size):
+    super().__init__(size)
+    for it in range(self.size):
+      self.cells.append(HiddenCell())
+
 class NeuralNetwork:
     def __init__(self, inputLayerLen, hiddenLayersLen, hiddenLayers, outputLayerLen):
         self.hiddenLayersLen = hiddenLayersLen
@@ -21,24 +51,26 @@ class NeuralNetwork:
         layers.append(outLayer)
         return layers
 
-    def sigmoid(self, x):
-        try:
-            sigm = 1 / (1 + math.exp(-x))
-            return sigm
-        except OverflowError:
-            return 0.0
     def forwardPass(self):
         for hiddenLayerIt in range(1, len(self.layers) - 1):
-            for cellIt in range(len(self.layers[hiddenLayerIt][0])):
+            if (hiddenLayerIt == 1):
+                cellRange = self.layers[0]
+            else:
+                cellRange = self.layers[hiddenLayerIt][0]
+            for cellIt in range(len(cellRange) - 1):
                 value = 0
-                for previousLayerIt in range(self.layers[hiddenLayerIt - 1][0].size - 1):
+                if (hiddenLayerIt == 1):
+                    previousLayerSize = len(self.layers[0])
+                else:
+                    previousLayerSize = len(self.layers[hiddenLayerIt - 1][0])
+                for previousLayerIt in range(previousLayerSize - 1):
                     if (hiddenLayerIt == 1):
                         value += self.layers[hiddenLayerIt - 1][previousLayerIt] * self.weigths[hiddenLayerIt - 1][previousLayerIt][cellIt]
                     else:
                         value += self.layers[hiddenLayerIt - 1][1][previousLayerIt] * self.weigths[hiddenLayerIt - 1][previousLayerIt][cellIt]
                 value += self.biases[hiddenLayerIt - 1][cellIt] * 1
                 self.layers[hiddenLayerIt][0][cellIt] = value
-                sigm = self.sigmoid(value)
+                sigm = value / 255
                 if round(sigm, 2) == 0.0:
                     sigm = 0.0
                 self.layers[hiddenLayerIt][1][cellIt] = sigm
@@ -48,7 +80,9 @@ class NeuralNetwork:
                 value += self.layers[-2][0][cellIt] * self.weigths[-2][cellIt][outputLayerIt]
             value += self.biases[-1][outputLayerIt] * 1
             self.layers[-1][0][outputLayerIt] = value
-            sigm = self.sigmoid(value)
+            sigm = sigmoid(value)
+            if round(sigm, 3) == 0.0:
+                sigm = 0.0
             if round(sigm, 3) == 0.0:
                 sigm = 0.0
             self.layers[-1][1][outputLayerIt] = sigm
@@ -108,3 +142,11 @@ class NeuralNetwork:
         l[pos] = 1
         return l
 
+def sigmoid(x):
+    try:
+        sigm = 1 / (1 + math.exp(-x))
+        if round(sigm, 3) == 0.0:
+            sigm = 0.0
+        return sigm
+    except OverflowError:
+        return 0.0

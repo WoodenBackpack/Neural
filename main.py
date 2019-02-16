@@ -4,6 +4,7 @@ import PyQt5.QtWidgets as qWidgets
 
 from neural import *
 import math
+import data
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -18,8 +19,11 @@ class MainWindow(qWidgets.QMainWindow):
         qWidgets.QMainWindow.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.neural = NeuralNetwork(3,5,4,3)
-        self.expected = self.neural.generateExpectedTab(3, 2)
+        self.data = data.ImagesLoader()
+        self.data.loadData()
+        self.neural = NeuralNetwork(self.data.inputLen, 10 , 2, 10)
+        self.it = 0
+
     def drawNet(self):
         circleSize = 50
         spacing = 20
@@ -42,18 +46,22 @@ class MainWindow(qWidgets.QMainWindow):
             startX += circleSize + spacing
     def keyPressEvent(self, event):
         if event.key() == qtCore.Qt.Key_Space:
-            self.neural.process(self.expected)
+            self.neural.process(self.data.X_train[self.it], self.neural.generateExpectedTab(10, self.data.y_train[self.it]))
+            self.update()
+            self.it += 1
+        if event.key() == qtCore.Qt.Key_M:
             self.neural.backwardPass()   
             self.update()
         if event.key() == qtCore.Qt.Key_Escape:
             self.close()
     def paintEvent(self, event):
-        self.painter = qtGui.QPainter(self)
-        self.painter.setPen(qtCore.Qt.white)
-        self.painter.begin(self)
-        self.drawNet();
-        self.resize(500, self.maxLen)
-        self.painter.end()
+        pass
+#        self.painter = qtGui.QPainter(self)
+#        self.painter.setPen(qtCore.Qt.white)
+#        self.painter.begin(self)
+#        self.drawNet();
+#        self.resize(500, self.maxLen)
+#        self.painter.end()
     def createAndDrawRect(self, xPos, yPos, x, y, text, painter, val):
         color = qtGui.QColor(0, 0, 255 - int(255 * val))
         qRect = qtCore.QRect(xPos ,yPos ,x ,y)
