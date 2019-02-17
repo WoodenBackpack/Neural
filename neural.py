@@ -53,10 +53,7 @@ class NeuralNetwork:
 
     def forwardPass(self):
         for hiddenLayerIt in range(1, len(self.layers) - 1):
-            if (hiddenLayerIt == 1):
-                cellRange = self.layers[0]
-            else:
-                cellRange = self.layers[hiddenLayerIt][0]
+            cellRange = self.layers[hiddenLayerIt][0]
             for cellIt in range(len(cellRange) - 1):
                 value = 0
                 if (hiddenLayerIt == 1):

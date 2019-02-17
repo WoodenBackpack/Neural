@@ -4,6 +4,7 @@ import PyQt5.QtWidgets as qWidgets
 
 from neural import *
 import math
+import time
 import data
 
 class Ui_MainWindow(object):
@@ -23,6 +24,21 @@ class MainWindow(qWidgets.QMainWindow):
         self.data.loadData()
         self.neural = NeuralNetwork(self.data.inputLen, 10 , 2, 10)
         self.it = 0
+        print("started processing")
+        processingStart = time.time()
+        dataSize = len(self.data.X_train) - 1
+        tenthPartOfDataSize = int(dataSize / 10)
+        printed = 1
+        for it in range(dataSize):
+            self.neural.process(self.data.X_train[it], self.neural.generateExpectedTab(10, self.data.y_train[it]))
+#        self.update()
+            if it % tenthPartOfDataSize == 0:
+                print("#" * printed)
+                printed += 1
+            if it % 25 == 0:
+                self.neural.backwardPass()
+        print("processed!")
+        print("it taken: ", time.time() - processingStart)
 
     def drawNet(self):
         circleSize = 50
@@ -45,13 +61,6 @@ class MainWindow(qWidgets.QMainWindow):
                 startPos += circleSize + spacing
             startX += circleSize + spacing
     def keyPressEvent(self, event):
-        if event.key() == qtCore.Qt.Key_Space:
-            self.neural.process(self.data.X_train[self.it], self.neural.generateExpectedTab(10, self.data.y_train[self.it]))
-            self.update()
-            self.it += 1
-        if event.key() == qtCore.Qt.Key_M:
-            self.neural.backwardPass()   
-            self.update()
         if event.key() == qtCore.Qt.Key_Escape:
             self.close()
     def paintEvent(self, event):
